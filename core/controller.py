@@ -49,8 +49,8 @@ class VideoController:
     def create(self, request):
         serializer_data = self.serializer_class(data=request.data)
         if serializer_data.is_valid():
-            serializer_data.save()
-            return create_response(self.serializer_class(serializer_data).data, "Success", 200)
+            instance = serializer_data.save()
+            return create_response(self.serializer_class(instance).data, "Success", 200)
         return create_response({}, serializer_data.errors, 400)
 
     def get(self, request):
