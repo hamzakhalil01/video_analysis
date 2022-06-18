@@ -20,3 +20,6 @@ class Video(models.Model):
     tags = models.TextField(null=True, blank=True)
 
 
+class Questions(models.Model):
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    question = models.CharField(max_length=250, null=True, blank=True)

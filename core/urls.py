@@ -1,5 +1,5 @@
 from django.urls import path
-from core.views import ProjectAPIView, VideoAPIView
+from core.views import ProjectAPIView, VideoAPIView, QuestionsAPIView
 
 urlpatterns = [
     path('manage-project', ProjectAPIView.as_view(
@@ -20,5 +20,15 @@ urlpatterns = [
             'delete': 'delete_video'
         }
     )
-             )
+             ),
+
+    path('manage-questions', QuestionsAPIView.as_view(
+        {
+            'get': 'get_question',
+            'post': 'create_question',
+            'patch': 'update_question',
+            'delete': 'delete_question'
+        }
+    )
+        )
 ]

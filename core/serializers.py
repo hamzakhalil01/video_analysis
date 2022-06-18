@@ -1,4 +1,4 @@
-from core.models import Project, Video
+from core.models import Project, Video, Questions
 from rest_framework.serializers import ModelSerializer
 
 
@@ -16,7 +16,11 @@ class VideoSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class QuestionSerializer(ModelSerializer):
 
+    class Meta:
+        model = Questions
+        fields = "__all__"
 
 
 
