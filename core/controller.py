@@ -1,7 +1,7 @@
 from core.serializers import ProjectSerializer, VideoSerializer, QuestionSerializer
-from core.helper import create_response
-import json
-
+from core.helper import create_response, get_default_query_param
+from rest_framework.pagination import LimitOffsetPagination
+from django.db.models import Q
 
 class ProjectController:
     serializer_class = ProjectSerializer
@@ -17,7 +17,13 @@ class ProjectController:
 
     def get_listing(self, request):
         if not "id" in request.query_params:
+            limit = get_default_query_param(request, "limit", None)
+            offset = get_default_query_param(request, "offset", None)
+            search = get_default_query_param(request, "search", None)
             data = self.serializer_class.Meta.model.objects.all()
+            if limit and offset:
+                pagination = LimitOffsetPagination()
+                data = pagination.paginate_queryset(data, request)
             return create_response(self.serializer_class(data, many=True).data, "Success", 200)
         data = self.serializer_class.Meta.model.objects.filter(id=request.query_params.get("id"))
         if not data:
@@ -55,7 +61,14 @@ class VideoController:
 
     def get(self, request):
         if not "id" in request.query_params:
-            return create_response(self.serializer_class(self.serializer_class.Meta.model.objects.all(), many=True).data, "Success", 200)
+            limit = get_default_query_param(request, "limit", None)
+            offset = get_default_query_param(request, "offset", None)
+
+            data = self.serializer_class.Meta.model.objects.all()
+            if limit and offset:
+                paginatin = LimitOffsetPagination()
+                data = paginatin.paginate_queryset(data, request)
+            return create_response(self.serializer_class(data, many=True).data, "Success", 200)
 
         else:
             instance = self.serializer_class.Meta.model.objects.filter(id=request.query_params.get("id")).first()
