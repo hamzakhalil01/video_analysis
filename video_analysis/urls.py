@@ -26,4 +26,4 @@ urlpatterns = [
 
 # For media
 if settings.DEBUG:
-    urlpatterns += static(settings.VIDEO_URL, document_root=settings.VIDEO_STORAGE)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
