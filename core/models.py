@@ -13,7 +13,7 @@ class Project(models.Model):
 class Video(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, unique=True, null=False, blank=False)
-    video = models.FileField(max_length=250, null=True, blank=True, upload_to='videos/')
+    video = models.FileField(upload_to='videos/')
     created_at = models.DateTimeField(auto_now_add=True)
     video_size = models.CharField(max_length=10, null=True, blank=True)
     sent_to_subjects = models.IntegerField(null=True, blank=True)
@@ -25,3 +25,4 @@ class Video(models.Model):
 class Questions(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     question = models.CharField(max_length=250, null=True, blank=True)
+    answer = models.TextField(null=True, blank=True)

@@ -63,8 +63,9 @@ class VideoController:
         if "id" not in request.query_params:
             limit = get_default_query_param(request, "limit", None)
             offset = get_default_query_param(request, "offset", None)
+            project = get_default_query_param(request, "project_id", None)
 
-            data = self.serializer_class.Meta.model.objects.all()
+            data = self.serializer_class.Meta.model.objects.filter1(project=project)
             if limit and offset:
                 pagination = LimitOffsetPagination()
                 data = pagination.paginate_queryset(data, request)
