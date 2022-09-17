@@ -1,4 +1,4 @@
-from core.serializers import ProjectSerializer, VideoSerializer, QuestionSerializer
+from core.serializers import ProjectSerializer, VideoSerializer, QuestionSerializer, UserVideoSerializer
 from core.helper import create_response, get_default_query_param
 from rest_framework.pagination import LimitOffsetPagination
 from django.db.models import Q
@@ -121,7 +121,6 @@ class QuestionsController:
         instance = self.serializer_class.Meta.model.objects.filter(**kwargs)
         if not instance:
             return create_response({}, "Question not found", 400)
-        print("hello")
         return create_response(self.serializer_class(instance, many=True).data, "Success", 200)
 
     def update(self, request):
@@ -134,7 +133,7 @@ class QuestionsController:
         if serialized_data.is_valid():
             serialized_data.save()
             return create_response(serialized_data.data, "Success", 200)
-        return create_response({}, serialized_data.errors, 400)
+        return create_response({}, serialized_data.errors, 500)
 
     def delete(self, request):
         if "id" not in request.query_params:
@@ -143,3 +142,53 @@ class QuestionsController:
         self.serializer_class.Meta.model.objects.filter(
             id=request.query_params.get("id")).delete()
         return create_response({}, "Success", 200)
+
+
+class UserVideoController:
+    serializer_class = UserVideoSerializer
+    def create(self, request):
+        serializer_data = self.serializer_class(data=request.data)
+        if serializer_data.is_valid():
+            serializer_data.save()
+            return create_response(self.serializer_class(serializer_data).data, "Success", 200)
+        else:
+            return create_response({}, serializer_data.errors, 400)
+
+
+    def get(self, request):
+        project = get_default_query_param(request, "project_id", None)
+        video = get_default_query_param(request, "video", None)
+        id = get_default_query_param(request, "id", None)
+
+        if project and video:
+            instances = self.serializer_class.Meta.model.objects.filter(project=project, video=video)
+            if not instances:
+                return create_response({}, "No video found!", 404)
+            return create_response(self.serializer_class(instances, many=True).data, "Success", 200)
+
+        if id:
+            instance = self.serializer_class.Meta.model.objects.filter(id=id).first()
+            if not instance:
+                return create_response({}, "No video found!", 404)
+            return create_response(self.serializer_class(instance).data, "Success", 200)
+
+    def update(self, request):
+        if "id" not in request.query_params:
+            return create_response({}, "User Video id not provided", 400)
+        instance = self.serializer_class.Meta.model.objects.filter(id=request.query_params.get("id")).first()
+        if not instance:
+            return create_response({}, "User Video not found", 400)
+        serialized_data = self.serializer_class(instance, data=request.data, partial=True)
+        if serialized_data.is_valid():
+            serialized_data.save()
+            return create_response(serialized_data.data, "Success", 200)
+        return create_response({}, serialized_data.errors, 500)
+
+    def delete(self, request):
+        if "id" not in request.query_params:
+            return create_response({}, "User Video id not provided", 400)
+
+        self.serializer_class.Meta.model.objects.filter(
+            id=request.query_params.get("id")).delete()
+        return create_response({}, "Success", 200)
+

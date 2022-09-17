@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
-from core.controller import ProjectController, VideoController, QuestionsController
+from core.controller import ProjectController, VideoController, QuestionsController, UserVideoController
 
 # Create your views here.
 project_controller = ProjectController()
 video_controller = VideoController()
 quest_controller = QuestionsController()
+user_controller = UserVideoController()
 
 class ProjectAPIView(ModelViewSet):
 
@@ -50,3 +51,18 @@ class QuestionsAPIView(ModelViewSet):
 
     def delete_question(self, request):
         return quest_controller.delete(request)
+
+
+class UserVideoAPI(ModelViewSet):
+    def create_user_video(self, request):
+        return user_controller.create(request)
+
+    def get_user_video(self, request):
+        return user_controller.get(request)
+
+    def update_user_video(self, request):
+        return user_controller.update(request)
+
+    def delete_user_video(self, request):
+        return user_controller.delete(request)
+

@@ -26,3 +26,10 @@ class Questions(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     question = models.CharField(max_length=250, null=True, blank=True)
     answer = models.TextField(null=True, blank=True)
+
+
+class UserVideo(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, null=True, blank=True)
+    user_video = models.FileField(upload_to='videos/')
