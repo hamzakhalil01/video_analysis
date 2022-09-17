@@ -111,19 +111,18 @@ class QuestionsController:
     def get(self, request):
         kwargs = {}
 
-        video = get_default_query_param(request, "video_id", "None")
+        video = get_default_query_param(request, "video", None)
+        id = get_default_query_param(request, "id", None)
         if video:
-            kwargs["video_id"] = video
+            kwargs["video"] = video
 
-        if "id" in request.query_params:
-        #     return create_response(self.serializer_class(
-        #         self.serializer_class.Meta.model.objects.all(), many=True).data,
-        #                            "Success", 200)
-            kwargs["id"] = request.query_params.get("id")
-        instance = self.serializer_class.Meta.model.objects.filter(**kwargs).first()
+        if id:
+            kwargs["id"] = id
+        instance = self.serializer_class.Meta.model.objects.filter(**kwargs)
         if not instance:
             return create_response({}, "Question not found", 400)
-        return create_response(self.serializer_class(instance).data, "Success", 200)
+        print("hello")
+        return create_response(self.serializer_class(instance, many=True).data, "Success", 200)
 
     def update(self, request):
         if "id" not in request.query_params:
