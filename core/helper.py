@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+import random
 
 
 def create_response(data, message, status_code):
@@ -27,3 +28,9 @@ def get_default_query_param(request, key, default):
         if key:
             return key
     return default
+
+
+
+def generate_six_length_random_number():
+    random_name = random.SystemRandom().randint(100000,999999)
+    return str(random_name)

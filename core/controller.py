@@ -1,5 +1,5 @@
 from core.serializers import ProjectSerializer, VideoSerializer, QuestionSerializer, UserVideoSerializer
-from core.helper import create_response, get_default_query_param
+from core.helper import create_response, get_default_query_param, generate_six_length_random_number
 from rest_framework.pagination import LimitOffsetPagination
 from django.db.models import Q
 
@@ -39,8 +39,8 @@ class ProjectController:
                 return create_response({}, "User not found", 404)
             serializer_data = self.serializer_class(instance, data=request.data, partial=True)
             if serializer_data.is_valid():
-                serializer_data.save()
-            return create_response(serializer_data.data, "Success", 200)
+                instance = serializer_data.save()
+            return create_response(self.serializer_class(instance).data, "Success", 200)
 
     def delete_listing(self, request):
         if "id" not in request.query_params:
@@ -86,8 +86,8 @@ class VideoController:
                 return create_response({}, "Video not found", 400)
             serialized_data = self.serializer_class(instance, data=request.data, partial=True)
             if serialized_data.is_valid():
-                serialized_data.save()
-                return create_response(serialized_data.data, "Success", 200)
+                instance = serialized_data.save()
+                return create_response(self.serializer_class(instance).data, "Success", 200)
             create_response({}, "Something went wrong", 400)
 
     def delete(self, request):
@@ -131,8 +131,8 @@ class QuestionsController:
             return create_response({}, "Question not found", 400)
         serialized_data = self.serializer_class(instance, data=request.data, partial=True)
         if serialized_data.is_valid():
-            serialized_data.save()
-            return create_response(serialized_data.data, "Success", 200)
+            instance = serialized_data.save()
+            return create_response(self.serializer_class(instance).data, "Success", 200)
         return create_response({}, serialized_data.errors, 500)
 
     def delete(self, request):
@@ -147,10 +147,16 @@ class QuestionsController:
 class UserVideoController:
     serializer_class = UserVideoSerializer
     def create(self, request):
+        try:
+            request.POST._mutable = True
+            request.data["name"] = generate_six_length_random_number() + ".mp4"
+            request.POST._mutable = False
+        except Exception as e:
+            print(e)
         serializer_data = self.serializer_class(data=request.data)
         if serializer_data.is_valid():
-            serializer_data.save()
-            return create_response(self.serializer_class(serializer_data).data, "Success", 200)
+            instance = serializer_data.save()
+            return create_response(self.serializer_class(instance).data, "Success", 200)
         else:
             return create_response({}, serializer_data.errors, 400)
 
@@ -180,8 +186,8 @@ class UserVideoController:
             return create_response({}, "User Video not found", 400)
         serialized_data = self.serializer_class(instance, data=request.data, partial=True)
         if serialized_data.is_valid():
-            serialized_data.save()
-            return create_response(serialized_data.data, "Success", 200)
+            instance = serialized_data.save()
+            return create_response(self.serializer_class(instance).data, "Success", 200)
         return create_response({}, serialized_data.errors, 500)
 
     def delete(self, request):
